@@ -1,0 +1,47 @@
+name: CI/CD - PHP + HTML + JS
+
+# Ejecutar cada vez que haya push o pull request en main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1 Descargar el código del repositorio
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2 Configurar PHP
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    # 2 Instalar dependencias (si usas Composer)
+    - name: Install dependencies
+      run: |
+        if [ -f composer.json ]; then
+          composer install --no-interaction --prefer-dist
+        else
+          echo "No hay composer.json, se omite instalación"
+        fi
+
+    # 4 Revisar sintaxis PHP
+    - name: PHP Lint
+      run: |
+        find . -name "*.php" -exec php -l {} \;
+
+    # 5 Desplegar al servidor vía FTP
+    - name: Deploy via FTP
+      env:
+        FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        FTP_USER: ${{ secrets.FTP_USER }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      run: |
+        sudo apt-get install lftp -y
+        lftp -c "open -u $FTP_USER,$FTP_PASSWORD $FTP_SERVER; mirror -R ./ /public_html/ --ignore-time --parallel=2"
