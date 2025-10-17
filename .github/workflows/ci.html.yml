@@ -1,0 +1,30 @@
+name: CI - HTML
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  html-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1 Descargar el proyecto
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2 Configurar Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    # 3 Instalar htmlhint
+    - name: Install htmlhint
+      run: npm install -g htmlhint
+
+    # 4 Validar archivos HTML
+    - name: Lint HTML
+      run: htmlhint "**/*.html"
