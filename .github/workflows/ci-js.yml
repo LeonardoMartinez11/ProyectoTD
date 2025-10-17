@@ -1,0 +1,50 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+name: CI - JavaScript
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1 Descargar código
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2 Configurar Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    # 3 Instalar dependencias (si existe package.json)
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm install
+        else
+          echo "No hay package.json, se omite instalación"
+        fi
+
+    # 4 Validar sintaxis con ESLint (si está instalado)
+    - name: Lint JavaScript
+      run: |
+        if [ -f package.json ]; then
+          if npx eslint --version; then
+            npx eslint . || echo "Hay errores de lint"
+          else
+            echo "ESLint no instalado, se omite lint"
+          fi
+        else
+          echo "No hay package.json, se omite lint"
+        fi
+
+   
+    #  run: npm test
+
