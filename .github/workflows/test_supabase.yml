@@ -18,24 +18,22 @@ jobs:
         with:
           php-version: '8.2'
 
-      - name: Probar conexión a Supabase
+      - name: Instalar extensiones PHP necesarias
         run: |
-          echo "<?php
-          require_once __DIR__ . '/conexion.php';
-          \$conexion = new ConexionSupabase();
-          \$resultado = \$conexion->request('GET', '/tu_tabla?limit=1');
-          if (isset(\$resultado['error'])) {
-              echo 'Error en la conexión: ' . \$resultado['error'];
-          } else {
-              echo 'Conexión exitosa a Supabase: ';
-              print_r(\$resultado);
-          }
-          ?>" > test.php
-
-          php test.php
-
           sudo apt-get update
           sudo apt-get install -y php-curl php-xml php-mbstring
 
-      - name: Probar conexión Supabase
-        run: php test_supabase.php
+      - name: Ejecutar prueba de conexión Supabase
+        run: |
+          php -r "
+          require_once __DIR__ . '/bd/conexion.php';
+          \$conn = new ConexionSupabase();
+          \$response = \$conn->request('GET', '/');
+          if (isset(\$response['error'])) {
+              echo 'Error al conectar con Supabase\n';
+              var_dump(\$response);
+              exit(1);
+          } else {
+              echo 'Conexión exitosa con Supabase\n';
+          }
+          "
