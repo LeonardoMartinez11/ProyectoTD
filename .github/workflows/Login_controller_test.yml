@@ -1,4 +1,4 @@
-name: CI Login Model
+name: CI LoginController
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test-loginmodel:
+  test-logincontroller:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,21 +23,43 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php-curl php-xml php-mbstring
 
-      - name: Ejecutar test de LoginModel
+      - name: Crear archivo de prueba test_controller.php
         run: |
-          php -r "
-          require getcwd() . '/modelo/LoginModel.php';
+          echo "<?php
+          \$datos_json = json_encode([
+              'usuario' => 'Leo3',
+              'contrasena' => '12345'
+          ]);
 
-          // Usuario de prueba existente en Supabase
-          \$usuario = 'Leo3';
-          \$password = '12345';
-
-          \$model = new LoginModel();
-          \$resultado = \$model->validarUsuario(\$usuario, \$password);
-
-          if (!\$resultado['success']) {
-              echo 'Fallo en LoginModel: ' . \$resultado['message'] . PHP_EOL;
-              exit(1);
+          // Simula php://input
+          \$GLOBALS['input'] = \$datos_json;
+          class VariableStream {
+              var \$position;
+              var \$varname;
+              function stream_open(\$path, \$mode, \$options, &\$opened_path) {
+                  \$url = parse_url(\$path);
+                  \$this->varname = 'input';
+                  \$this->position = 0;
+                  return true;
+              }
+              function stream_read(\$count) {
+                  \$ret = substr(\$GLOBALS[\$this->varname], \$this->position, \$count);
+                  \$this->position += strlen(\$ret);
+                  return \$ret;
+              }
+              function stream_eof() {
+                  return \$this->position >= strlen(\$GLOBALS[\$this->varname]);
+              }
+              function stream_stat() {
+                  return [];
+              }
           }
-          echo 'LoginModel funciona correctamente para usuario Leo3' . PHP_EOL;
-          "
+
+          stream_wrapper_unregister('php');
+          stream_wrapper_register('php', 'VariableStream');
+
+          require getcwd() . '/controlador/LoginController.php';
+          " > test_controller.php
+
+      - name: Ejecutar test LoginController
+        run: php test_controller.php
