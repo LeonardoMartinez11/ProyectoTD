@@ -1,26 +1,39 @@
-name: Test Supabase Connection (CI PHP)
+name: Probar conexión Supabase
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  test-supabase:
+  test-php:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar repositorio
-        uses: actions/checkout@v4
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
 
-      - name: Configurar PHP
+      - name: Instalar PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
 
-      - name: Instalar dependencias PHP básicas
+      - name: Probar conexión a Supabase
         run: |
+          echo "<?php
+          require_once __DIR__ . '/conexion.php';
+          \$conexion = new ConexionSupabase();
+          \$resultado = \$conexion->request('GET', '/tu_tabla?limit=1');
+          if (isset(\$resultado['error'])) {
+              echo 'Error en la conexión: ' . \$resultado['error'];
+          } else {
+              echo 'Conexión exitosa a Supabase: ';
+              print_r(\$resultado);
+          }
+          ?>" > test.php
+
+          php test.php
+
           sudo apt-get update
           sudo apt-get install -y php-curl php-xml php-mbstring
 
