@@ -1,0 +1,48 @@
+name: CI LoginController
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-logincontroller:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Instalar extensiones PHP necesarias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-curl php-xml php-mbstring
+
+      - name: Ejecutar prueba LoginController inline
+        run: |
+          php -r "
+          // Simular JSON enviado desde JS
+          \$json = json_encode([
+              'usuario' => 'Leo3',
+              'contrasena' => '12345'
+          ]);
+          file_put_contents('php://memory', \$json); // simulación interna
+
+          // Capturar salida del controller
+          ob_start();
+          require __DIR__ . '/../controlador/LoginController.php';
+          \$salida = ob_get_clean();
+
+          // Convertir salida JSON a array
+          \$respuesta = json_decode(\$salida, true);
+
+          if (\$respuesta['success']) {
+              echo 'LoginController funciona correctamente para usuario Leo3\n';
+          } else {
+              echo 'Fallo en LoginController: ' . \$respuesta['message'] . '\n';
+              exit(1); // Marca workflow como failed
