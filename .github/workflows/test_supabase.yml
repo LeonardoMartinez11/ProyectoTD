@@ -1,0 +1,28 @@
+name: Test Supabase Connection (CI PHP)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-supabase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Instalar dependencias PHP básicas
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-curl php-xml php-mbstring
+
+      - name: Probar conexión Supabase
+        run: php test_supabase.php
