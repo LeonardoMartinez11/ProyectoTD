@@ -1,0 +1,41 @@
+name: CI LoginModel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-loginmodel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Instalar extensiones PHP necesarias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-curl php-xml php-mbstring
+
+      - name: Ejecutar prueba LoginModel inline
+        run: |
+          php -r "
+          require_once __DIR__ . '/modelo/ModelLogin.php';
+          \$model = new ModelLogin();
+          // Usuario de prueba (ajustar si existe en Supabase)
+          \$usuario = 'testuser';
+          \$password = 'testpass';
+          \$resultado = \$model->validarUsuario(\$usuario, \$password);
+          if (\$resultado['success']) {
+              echo 'LoginModel funciona correctamente para usuario de prueba\n';
+          } else {
+              echo 'Fallo en LoginModel: ' . \$resultado['message'] . '\n';
+              exit(1);
+          }
+          "
