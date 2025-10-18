@@ -1,4 +1,4 @@
-name: CI LoginController
+name: CI Login Model
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test-logincontroller:
+  test-loginmodel:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,26 +23,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php-curl php-xml php-mbstring
 
-      - name: Crear script temporal para test LoginController
+      - name: Ejecutar test de ModelLogin
         run: |
-          echo "<?php
-          // Simular JSON enviado desde JS
-          \$json = json_encode(['usuario'=>'Leo3','contrasena'=>'12345']);
-          file_put_contents('input.json', \$json);
+          php -r "
+          require __DIR__ . '/../modelo/ModelLogin.php';
 
-          // Redirigir php://input al archivo temporal
-          \$GLOBALS['__PHP_INPUT__'] = file_get_contents('input.json');
-          function file_get_contents_php_input(\$filename) {
-              if (\$filename==='php://input') return \$GLOBALS['__PHP_INPUT__'];
-              return file_get_contents(\$filename);
+          // Usuario de prueba existente en Supabase
+          \$usuario = 'Leo3';
+          \$password = '12345';
+
+          \$model = new ModelLogin();
+          \$resultado = \$model->validarUsuario(\$usuario, \$password);
+
+          if (!\$resultado['success']) {
+              echo 'Fallo en LoginModel: ' . \$resultado['message'] . PHP_EOL;
+              exit(1);
           }
-          stream_wrapper_unregister('php');
-          stream_wrapper_register('php','VariableStream') or die('Failed');
-
-          // Ejecutar LoginController
-          require __DIR__ . '/../controlador/LoginController.php';
-
-          " > test_controller.php
-
-      - name: Ejecutar test LoginController
-        run: php test_controller.php
+          echo 'LoginModel funciona correctamente para usuario Leo3' . PHP_EOL;
+          "
