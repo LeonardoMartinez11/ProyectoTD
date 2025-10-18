@@ -29,8 +29,8 @@ jobs:
           require_once __DIR__ . '/modelo/LoginModel.php';
           \$model = new ModelLogin();
           // Usuario de prueba (ajustar si existe en Supabase)
-          \$usuario = 'testuser';
-          \$password = 'testpass';
+          \$usuario = 'Leo3';
+          \$password = '12345';
           \$resultado = \$model->validarUsuario(\$usuario, \$password);
           if (\$resultado['success']) {
               echo 'LoginModel funciona correctamente para usuario de prueba\n';
