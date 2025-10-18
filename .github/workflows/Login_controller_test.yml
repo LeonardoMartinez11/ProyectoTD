@@ -26,7 +26,7 @@ jobs:
       - name: Ejecutar test de LoginModel
         run: |
           php -r "
-          require __DIR__ . '/../modelo/LoginModel.php';
+          require getcwd() . '/modelo/LoginModel.php';
 
           // Usuario de prueba existente en Supabase
           \$usuario = 'Leo3';
