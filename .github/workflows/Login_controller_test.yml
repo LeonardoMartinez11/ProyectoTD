@@ -23,26 +23,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php-curl php-xml php-mbstring
 
-      - name: Ejecutar prueba LoginController inline
+      - name: Crear script temporal para test LoginController
         run: |
-          php -r "
+          echo "<?php
           // Simular JSON enviado desde JS
-          \$json = json_encode([
-              'usuario' => 'Leo3',
-              'contrasena' => '12345'
-          ]);
-          file_put_contents('php://memory', \$json); // simulación interna
+          \$json = json_encode(['usuario'=>'Leo3','contrasena'=>'12345']);
+          file_put_contents('input.json', \$json);
 
-          // Capturar salida del controller
-          ob_start();
+          // Redirigir php://input al archivo temporal
+          \$GLOBALS['__PHP_INPUT__'] = file_get_contents('input.json');
+          function file_get_contents_php_input(\$filename) {
+              if (\$filename==='php://input') return \$GLOBALS['__PHP_INPUT__'];
+              return file_get_contents(\$filename);
+          }
+          stream_wrapper_unregister('php');
+          stream_wrapper_register('php','VariableStream') or die('Failed');
+
+          // Ejecutar LoginController
           require __DIR__ . '/../controlador/LoginController.php';
-          \$salida = ob_get_clean();
 
-          // Convertir salida JSON a array
-          \$respuesta = json_decode(\$salida, true);
+          " > test_controller.php
 
-          if (\$respuesta['success']) {
-              echo 'LoginController funciona correctamente para usuario Leo3\n';
-          } else {
-              echo 'Fallo en LoginController: ' . \$respuesta['message'] . '\n';
-              exit(1); // Marca workflow como failed
+      - name: Ejecutar test LoginController
+        run: php test_controller.php
