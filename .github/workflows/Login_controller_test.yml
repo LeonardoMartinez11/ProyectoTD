@@ -23,16 +23,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php-curl php-xml php-mbstring
 
-      - name: Ejecutar test de ModelLogin
+      - name: Ejecutar test de LoginModel
         run: |
           php -r "
-          require __DIR__ . '/../modelo/ModelLogin.php';
+          require __DIR__ . '/../modelo/LoginModel.php';
 
           // Usuario de prueba existente en Supabase
           \$usuario = 'Leo3';
           \$password = '12345';
 
-          \$model = new ModelLogin();
+          \$model = new LoginModel();
           \$resultado = \$model->validarUsuario(\$usuario, \$password);
 
           if (!\$resultado['success']) {
