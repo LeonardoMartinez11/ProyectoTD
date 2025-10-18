@@ -26,7 +26,7 @@ jobs:
       - name: Ejecutar prueba LoginModel inline
         run: |
           php -r "
-          require_once __DIR__ . '/modelo/ModelLogin.php';
+          require_once __DIR__ . '/modelo/LoginModel.php';
           \$model = new ModelLogin();
           // Usuario de prueba (ajustar si existe en Supabase)
           \$usuario = 'testuser';
