@@ -20,7 +20,7 @@
                     <div class="card-body">
                         <h5 class="card-title mb-3">Gestión de Usuarios</h5>
                         <p class="card-text text-muted">Crear, editar o eliminar usuarios del sistema.</p>
-                        <a href="admin_usuarios.php" class="btn btn-primary">Entrar</a>
+                        <a href="usuarios_admin.php" class="btn btn-primary">Entrar</a>
                     </div>
                 </div>
             </div>
@@ -32,7 +32,7 @@
                     <div class="card-body">
                         <h5 class="card-title mb-3">Gestión de Unidades</h5>
                         <p class="card-text text-muted">Registrar, modificar o dar de baja unidades.</p>
-                        <a href="admin_unidades.php" class="btn btn-primary">Entrar</a>
+                        <a href="unidades_admin.php" class="btn btn-primary">Entrar</a>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                     <div class="card-body">
                         <h5 class="card-title mb-3">Gestión de Choferes</h5>
                         <p class="card-text text-muted">Administrar choferes activos o inactivos.</p>
-                        <a href="admin_choferes.php" class="btn btn-primary">Entrar</a>
+                        <a href="choferes_admin.php" class="btn btn-primary">Entrar</a>
                     </div>
                 </div>
             </div>
